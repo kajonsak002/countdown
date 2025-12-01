@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const TARGET_DATE_ISO = "2025-12-27T09:00:00";
 
-function getRemaining(msUntil) {
+function getRemaining({ msUntil }: { msUntil: any }) {
   if (msUntil <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   const totalSec = Math.floor(msUntil / 1000);
   const days = Math.floor(totalSec / (3600 * 24));
@@ -26,16 +26,16 @@ export default function CountdownPage() {
   }, []);
 
   const msUntil = targetDate - now;
-  const { days, hours, minutes, seconds } = getRemaining(msUntil);
+  const { days, hours, minutes, seconds } = getRemaining({ msUntil });
 
   useEffect(() => {
     if (msUntil <= 0 && !finished) setFinished(true);
   }, [msUntil, finished]);
 
-  const pad = (n) => String(n).padStart(2, "0");
+  const pad = (n: any) => String(n).padStart(2, "0");
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-rose-100 to-indigo-200 text-slate-700 p-6 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-200 via-rose-100 to-indigo-200 text-slate-700 p-6 relative overflow-hidden">
       {/* soft floating blobs */}
       <div className="absolute top-10 left-10 w-44 h-44 bg-pink-300/40 blur-3xl rounded-full animate-pulse" />
       <div className="absolute bottom-10 right-20 w-52 h-52 bg-indigo-300/40 blur-3xl rounded-full animate-pulse delay-2000" />
@@ -78,7 +78,7 @@ export default function CountdownPage() {
                 <motion.div
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
-                  className="p-6 rounded-2xl bg-gradient-to-r from-pink-300 to-yellow-200 text-slate-800 shadow-xl">
+                  className="p-6 rounded-2xl bg-linear-to-r from-pink-300 to-yellow-200 text-slate-800 shadow-xl">
                   <h2 className="text-4xl md:text-5xl font-bold text-center">
                     Time's up! 🎀
                   </h2>
@@ -103,7 +103,15 @@ export default function CountdownPage() {
   );
 }
 
-function TimeCard({ label, value, color }) {
+function TimeCard({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color: "pink" | "purple" | "sky" | "rose";
+}) {
   const pastel = {
     pink: "from-pink-200 to-pink-300",
     purple: "from-violet-200 to-violet-300",
@@ -113,7 +121,7 @@ function TimeCard({ label, value, color }) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center p-5 rounded-2xl border border-white/40 shadow-inner bg-gradient-to-br ${pastel[color]}`}>
+      className={`flex flex-col items-center justify-center p-5 rounded-2xl border border-white/40 shadow-inner bg-linear-to-br ${pastel[color]}`}>
       <div className="text-4xl md:text-5xl font-extrabold tabular-nums text-slate-700 drop-shadow">
         {value}
       </div>
