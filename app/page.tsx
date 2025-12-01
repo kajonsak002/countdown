@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const TARGET_DATE_ISO = "2025-12-27T09:00:00";
 
-function getRemaining({ msUntil }: { msUntil: any }) {
+function getRemaining({ msUntil }: { msUntil: number }) {
   if (msUntil <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   const totalSec = Math.floor(msUntil / 1000);
   const days = Math.floor(totalSec / (3600 * 24));
@@ -32,7 +32,7 @@ export default function CountdownPage() {
     if (msUntil <= 0 && !finished) setFinished(true);
   }, [msUntil, finished]);
 
-  const pad = (n: any) => String(n).padStart(2, "0");
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-200 via-rose-100 to-indigo-200 text-slate-700 p-6 relative overflow-hidden">
@@ -80,7 +80,7 @@ export default function CountdownPage() {
                   animate={{ scale: 1 }}
                   className="p-6 rounded-2xl bg-linear-to-r from-pink-300 to-yellow-200 text-slate-800 shadow-xl">
                   <h2 className="text-4xl md:text-5xl font-bold text-center">
-                    Time's up! 🎀
+                    Time&apos;s up! 🎀
                   </h2>
                   <p className="text-center mt-2">Your event has started! ✨</p>
                 </motion.div>
