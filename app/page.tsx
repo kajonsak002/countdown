@@ -1,103 +1,160 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const TARGET_DATE_ISO = "2025-12-27T09:00:00";
+
+function getRemaining(msUntil) {
+  if (msUntil <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const totalSec = Math.floor(msUntil / 1000);
+  const days = Math.floor(totalSec / (3600 * 24));
+  const hours = Math.floor((totalSec % (3600 * 24)) / 3600);
+  const minutes = Math.floor((totalSec % 3600) / 60);
+  const seconds = totalSec % 60;
+  return { days, hours, minutes, seconds };
+}
+
+export default function CountdownPage() {
+  const targetDate = new Date(TARGET_DATE_ISO).getTime();
+  const [now, setNow] = useState(() => Date.now());
+  const [finished, setFinished] = useState(false);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(id);
+  }, []);
+
+  const msUntil = targetDate - now;
+  const { days, hours, minutes, seconds } = getRemaining(msUntil);
+
+  useEffect(() => {
+    if (msUntil <= 0 && !finished) setFinished(true);
+  }, [msUntil, finished]);
+
+  const pad = (n) => String(n).padStart(2, "0");
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-rose-100 to-indigo-200 text-slate-700 p-6 relative overflow-hidden">
+      {/* soft floating blobs */}
+      <div className="absolute top-10 left-10 w-44 h-44 bg-pink-300/40 blur-3xl rounded-full animate-pulse" />
+      <div className="absolute bottom-10 right-20 w-52 h-52 bg-indigo-300/40 blur-3xl rounded-full animate-pulse delay-2000" />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      <div className="w-full max-w-4xl mx-auto relative z-10">
+        <motion.header
+          initial={{ y: -40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-center text-rose-600 drop-shadow">
+            Cute Countdown Timer 💖
+          </h1>
+          <p className="text-center text-rose-400 mt-2 font-medium">
+            Target: {new Date(TARGET_DATE_ISO).toLocaleString()}
+          </p>
+        </motion.header>
+
+        <section className="relative bg-white/60 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/40">
+          <AnimatePresence>
+            {!finished ? (
+              <motion.div
+                key="countdown"
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.5 }}
+                className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <TimeCard label="Days" value={String(days)} color="pink" />
+                <TimeCard label="Hours" value={pad(hours)} color="purple" />
+                <TimeCard label="Minutes" value={pad(minutes)} color="sky" />
+                <TimeCard label="Seconds" value={pad(seconds)} color="rose" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="celebrate"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col items-center gap-6">
+                <motion.div
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  className="p-6 rounded-2xl bg-gradient-to-r from-pink-300 to-yellow-200 text-slate-800 shadow-xl">
+                  <h2 className="text-4xl md:text-5xl font-bold text-center">
+                    Time's up! 🎀
+                  </h2>
+                  <p className="text-center mt-2">Your event has started! ✨</p>
+                </motion.div>
+
+                <FireworksCute />
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => window.location.reload()}
+                  className="mt-2 px-6 py-2 rounded-full bg-white/70 backdrop-blur border border-rose-200 text-rose-500 font-semibold shadow-lg hover:bg-white">
+                  Restart
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function TimeCard({ label, value, color }) {
+  const pastel = {
+    pink: "from-pink-200 to-pink-300",
+    purple: "from-violet-200 to-violet-300",
+    sky: "from-sky-200 to-sky-300",
+    rose: "from-rose-200 to-rose-300",
+  };
+
+  return (
+    <div
+      className={`flex flex-col items-center justify-center p-5 rounded-2xl border border-white/40 shadow-inner bg-gradient-to-br ${pastel[color]}`}>
+      <div className="text-4xl md:text-5xl font-extrabold tabular-nums text-slate-700 drop-shadow">
+        {value}
+      </div>
+      <div className="mt-2 text-sm uppercase tracking-wide text-slate-600 font-semibold">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function FireworksCute() {
+  return (
+    <div className="w-full flex justify-center">
+      <svg viewBox="0 0 200 80" className="w-80 h-40">
+        <g>
+          <motion.circle
+            cx="30"
+            cy="40"
+            r="3"
+            animate={{ r: [3, 12, 3], opacity: [1, 0.7, 0] }}
+            transition={{ repeat: Infinity, duration: 1.2 }}
+            fill="#f9a8d4"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <motion.circle
+            cx="60"
+            cy="30"
+            r="3"
+            animate={{ r: [3, 15, 3], opacity: [1, 0.7, 0] }}
+            transition={{ repeat: Infinity, duration: 1.4 }}
+            fill="#a5b4fc"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <motion.circle
+            cx="100"
+            cy="25"
+            r="3"
+            animate={{ r: [3, 18, 3], opacity: [1, 0.7, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6 }}
+            fill="#fbcfe8"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </g>
+      </svg>
     </div>
   );
 }
