@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, TargetAndTransition, Transition } from "framer-motion";
 
 interface IntroSequenceProps {
     onComplete: () => void;
@@ -139,8 +139,8 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
 interface PoppableElementProps {
     children: React.ReactNode;
     className?: string;
-    animate?: any;
-    transition?: any;
+    animate?: TargetAndTransition;
+    transition?: Transition;
 }
 
 function PoppableElement({ children, className, animate, transition }: PoppableElementProps) {
