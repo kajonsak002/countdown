@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 
 interface IntroSequenceProps {
@@ -135,7 +136,14 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
     );
 }
 
-function PoppableElement({ children, className, animate, transition }: any) {
+interface PoppableElementProps {
+    children: React.ReactNode;
+    className?: string;
+    animate?: any;
+    transition?: any;
+}
+
+function PoppableElement({ children, className, animate, transition }: PoppableElementProps) {
     const [isPopped, setIsPopped] = useState(false);
 
     if (isPopped) return null;
@@ -155,7 +163,6 @@ function PoppableElement({ children, className, animate, transition }: any) {
 }
 
 function IntroLoading({ onComplete }: { onComplete: () => void }) {
-    const [isHolding, setIsHolding] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isExploding, setIsExploding] = useState(false);
     const requestRef = useRef<number | null>(null);
@@ -163,7 +170,6 @@ function IntroLoading({ onComplete }: { onComplete: () => void }) {
 
     const startHolding = () => {
         if (isExploding) return;
-        setIsHolding(true);
         startTimeRef.current = Date.now();
 
         const animate = () => {
@@ -186,7 +192,6 @@ function IntroLoading({ onComplete }: { onComplete: () => void }) {
 
     const stopHolding = () => {
         if (isExploding) return;
-        setIsHolding(false);
         if (requestRef.current) {
             cancelAnimationFrame(requestRef.current);
         }
@@ -195,7 +200,6 @@ function IntroLoading({ onComplete }: { onComplete: () => void }) {
 
     const handleExplosion = () => {
         setIsExploding(true);
-        setIsHolding(false);
         if (requestRef.current) {
             cancelAnimationFrame(requestRef.current);
         }
@@ -362,10 +366,11 @@ function IntroCard({
             whileTap={{ scale: 0.95 }}
         >
             <div className="relative aspect-[3/4] w-full overflow-hidden">
-                <img
+                <Image
                     src={imageSrc}
                     alt={title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div
                     className={`absolute inset-0 bg-gradient-to-t ${gradient} via-transparent to-transparent opacity-80`}
