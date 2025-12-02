@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 interface IntroSequenceProps {
     onComplete: () => void;
 }
-
+// 
 export default function IntroSequence({ onComplete }: IntroSequenceProps) {
     const [step, setStep] = useState(0); // 0: Loading, 1: Card 1, 2: Card 2, 3: Card 3
     const [showModal, setShowModal] = useState(false);
